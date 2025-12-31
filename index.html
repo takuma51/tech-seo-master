@@ -98,7 +98,9 @@
     <button id="btn-next" class="btn-next">次の問題へ</button>
   </div>
 
-  <footer>© 2026 Takuma Oka</footer>
+  <footer>
+  　Created by <a href="https://twitter.com/OkaTakuma1" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold;">Takuma Oka</a>
+　</footer>
 </div>
 
 <script>
@@ -295,13 +297,38 @@ function checkAnswer(selected, correct, btn) {
   nextBtn.onclick = nextQuestion;
 }
 
-function nextQuestion() {
-  currentIdx++;
-  if (currentIdx < QUIZ_COUNT) {
-    loadQuestion();
-  } else {
-    showResult();
-  }
+function showResult() {
+  const percentage = (score / QUIZ_COUNT) * 100;
+  let rank = "C";
+  let msg = "まだまだこれから！";
+  
+  if(percentage >= 90) { rank = "S"; msg = "完璧！テクニカルSEOマスター！"; }
+  else if(percentage >= 70) { rank = "A"; msg = "素晴らしい！現場で戦えるレベル！"; }
+  else if(percentage >= 50) { rank = "B"; msg = "あと一歩！復習しよう。"; }
+
+  // シェア用テキスト作成
+  const shareText = `【Tech SEO Master】実力診断テストで「ランク${rank}」を取りました！正解数: ${score}/${QUIZ_COUNT} ${msg} #TechSEOMaster`;
+  const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText) + "&url=" + encodeURIComponent(location.href);
+
+  const card = document.getElementById('game-card');
+  card.innerHTML = `
+    <h2 style="text-align:center;">結果発表</h2>
+    <div style="text-align:center; margin:20px 0;">
+      <span style="font-size:14px; opacity:0.7;">正解数</span><br>
+      <span style="font-size:32px; font-weight:bold;">${score}</span> <span style="font-size:18px;">/ ${QUIZ_COUNT}</span>
+    </div>
+    <div style="text-align:center; margin-bottom:30px;">
+      <span style="font-size:14px; opacity:0.7;">ランク</span>
+      <span class="rank-badge">${rank}</span>
+      <p style="color:var(--accent); font-weight:bold;">${msg}</p>
+    </div>
+    
+    <a href="${shareUrl}" target="_blank" class="btn-next" style="display:block; text-align:center; text-decoration:none; background:#1DA1F2; margin-bottom:12px;">
+      Xで結果をシェアする
+    </a>
+
+    <button class="btn-next" onclick="location.reload()" style="display:block; background:transparent; border:1px solid rgba(255,255,255,0.3);">もう一度挑戦する</button>
+  `;
 }
 
 function showResult() {
