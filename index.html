@@ -33,49 +33,41 @@
       transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     
-    /* アニメーション: スライドイン */
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    /* アニメーション */
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .slide-in { animation: slideIn 0.4s ease-out forwards; }
 
     /* プログレスバー */
     .progress-track { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 20px 0; overflow: hidden; }
     .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; }
 
-    /* 問題文 */
-    .question { font-size: 19px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; min-height: 60px;}
-    .tag { font-size: 11px; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 6px; vertical-align: middle; margin-right: 6px; }
+    /* コンテンツ */
+    .question { font-size: 18px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; min-height: 60px;}
+    .tag { font-size: 11px; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 6px; vertical-align: middle; margin-right: 6px; }
 
-    /* 選択肢ボタン */
     .btn-option {
-      width: 100%; text-align: left; padding: 18px; margin-bottom: 12px;
+      width: 100%; text-align: left; padding: 16px; margin-bottom: 12px;
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px; color: var(--text); font-size: 15px; font-weight: 600;
-      transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden;
+      border-radius: 16px; color: var(--text); font-size: 14px; font-weight: 600;
+      transition: all 0.2s; cursor: pointer; position: relative;
     }
     .btn-option:active { transform: scale(0.98); background: rgba(255,255,255,0.1); }
-    
-    /* 正解・不正解の演出 */
     .btn-option.correct { background: rgba(0, 210, 255, 0.2); border-color: var(--ok); color: var(--ok); }
     .btn-option.wrong { background: rgba(255, 71, 87, 0.2); border-color: var(--ng); }
     
-    /* 解説エリア */
     .explanation {
       display: none; background: rgba(0,0,0,0.3); padding: 16px; border-radius: 16px;
-      margin-top: 20px; font-size: 14px; line-height: 1.6; border-left: 4px solid var(--accent);
+      margin-top: 20px; font-size: 13px; line-height: 1.6; border-left: 4px solid var(--accent);
     }
     .explanation.show { display: block; animation: slideIn 0.3s ease; }
 
-    /* ネクストボタン */
     .btn-next {
       width: 100%; padding: 16px; margin-top: 20px; background: var(--accent); border: none;
       border-radius: 14px; color: #fff; font-weight: bold; font-size: 16px;
       display: none; cursor: pointer; box-shadow: 0 4px 15px rgba(124, 92, 255, 0.4);
     }
+    .rank-badge { font-size: 48px; font-weight: 900; color: var(--ok); text-shadow: 0 0 20px var(--ok); display:block; margin: 10px 0;}
 
-    /* フッター */
     footer { text-align: center; color: rgba(255,255,255,0.4); font-size: 12px; margin-top: auto; padding-top: 20px; }
   </style>
 </head>
@@ -84,17 +76,24 @@
 <div class="app-container">
   <header>
     <h1>Tech SEO Master</h1>
-    <div style="font-size:13px; font-weight:bold; color:var(--accent);">Lv.1</div>
+    <div id="status-bar" style="font-size:13px; font-weight:bold; color:var(--accent);">準備中...</div>
   </header>
 
-  <div id="game-card" class="card slide-in">
-    <div class="progress-track"><div id="progress" class="progress-fill"></div></div>
-    
-    <div id="q-meta" style="margin-bottom:8px;"></div>
-    <div id="question" class="question">読み込み中...</div>
-    
-    <div id="options"></div>
+  <div id="start-screen" class="card slide-in">
+    <h2 style="text-align:center;">実力診断テスト</h2>
+    <p style="opacity:0.8; text-align:center; font-size:14px; margin-bottom:30px;">
+      全100問のデータベースから<br>
+      ランダムに<strong style="color:var(--ok)">30問</strong>出題されます。<br>
+      あなたのテクニカルSEO力を測定します。
+    </p>
+    <button class="btn-next" onclick="startQuiz()" style="display:block;">テストを開始する</button>
+  </div>
 
+  <div id="game-card" class="card" style="display:none;">
+    <div class="progress-track"><div id="progress" class="progress-fill"></div></div>
+    <div id="q-meta" style="margin-bottom:8px;"></div>
+    <div id="question" class="question"></div>
+    <div id="options"></div>
     <div id="explanation" class="explanation"></div>
     <button id="btn-next" class="btn-next">次の問題へ</button>
   </div>
@@ -103,101 +102,12 @@
 </div>
 
 <script>
-// --- データ（サンプル：実際は前回の100問を使います） ---
-const QUESTIONS = [
-  { id: 1, tags: ["Crawl"], q: "クロールバジェットの無駄遣いになる最大の要因は？", choices: ["画像サイズが大きい", "無限に生成されるパラメータURL", "CSSファイルが多い"], ans: 1, exp: "パラメータによる重複URLや無限URLは、Googlebotを迷わせ、重要なページへの到達を阻害します。" },
-  { id: 2, tags: ["Index"], q: "noindexタグが入っているページは、クロールされる？", choices: ["絶対にされない", "される（内容は読まれる）", "ブロックされる"], ans: 1, exp: "noindexは『検索結果に出さない』命令であり、クロール自体は行われます。クロール拒否にはrobots.txtを使います。" },
-  { id: 3, tags: ["CWV"], q: "LCP (Largest Contentful Paint) の改善に最も効くのは？", choices: ["画像の圧縮とプリロード", "JavaScriptの削除", "フォントの変更"], ans: 0, exp: "LCPはメインコンテンツの表示速度です。ヒーロー画像のWebP化やPreloadが直接効きます。" }
-];
-
-let currentIdx = 0;
-let score = 0;
-const card = document.getElementById('game-card');
-
-// --- PWA設定 ---
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
-}
-
-// --- ゲームロジック ---
-function loadQuestion() {
-  const q = QUESTIONS[currentIdx];
-  
-  // アニメーションリセット
-  card.classList.remove('slide-in');
-  void card.offsetWidth; // リフロー強制
-  card.classList.add('slide-in');
-
-  // 表示更新
-  document.getElementById('q-meta').innerHTML = `<span class="tag">${q.tags[0]}</span> <span style="font-size:12px;opacity:0.7">Q.${currentIdx+1}/${QUESTIONS.length}</span>`;
-  document.getElementById('question').textContent = q.q;
-  
-  // プログレスバー
-  document.getElementById('progress').style.width = `${(currentIdx / QUESTIONS.length) * 100}%`;
-
-  // 選択肢生成
-  const optsDiv = document.getElementById('options');
-  optsDiv.innerHTML = "";
-  q.choices.forEach((choice, i) => {
-    const btn = document.createElement('button');
-    btn.className = "btn-option";
-    btn.textContent = choice;
-    btn.onclick = () => checkAnswer(i, q.ans, btn);
-    optsDiv.appendChild(btn);
-  });
-
-  document.getElementById('explanation').className = "explanation";
-  document.getElementById('btn-next').style.display = "none";
-}
-
-function checkAnswer(selected, correct, btn) {
-  // ハプティックフィードバック（スマホがブルッと震える）
-  if (navigator.vibrate) navigator.vibrate(15);
-
-  const btns = document.querySelectorAll('.btn-option');
-  btns.forEach(b => b.disabled = true); // 連打防止
-
-  if (selected === correct) {
-    btn.classList.add('correct');
-    score++;
-  } else {
-    btn.classList.add('wrong');
-    btns[correct].classList.add('correct'); // 正解を教える
-    if (navigator.vibrate) navigator.vibrate([30, 50, 30]); // ブブブッと震える
-  }
-
-  // 解説表示
-  const expDiv = document.getElementById('explanation');
-  expDiv.innerHTML = "<strong>💡 解説</strong><br>" + QUESTIONS[currentIdx].exp;
-  expDiv.classList.add('show');
-
-  // 次へボタン
-  const nextBtn = document.getElementById('btn-next');
-  nextBtn.textContent = (currentIdx === QUESTIONS.length - 1) ? "結果を見る" : "次の問題へ";
-  nextBtn.style.display = "block";
-  nextBtn.onclick = nextQuestion;
-}
-
-function nextQuestion() {
-  currentIdx++;
-  if (currentIdx < QUESTIONS.length) {
-    loadQuestion();
-  } else {
-    showResult();
-  }
-}
-
-function showResult() {
-  card.innerHTML = `
-    <h2 style="text-align:center;">🎉 完了！</h2>
-    <div style="font-size:40px; text-align:center; margin:20px 0;">${score} / ${QUESTIONS.length}</div>
-    <p style="text-align:center; opacity:0.8;">お疲れ様でした！</p>
-    <button class="btn-next" onclick="location.reload()" style="display:block;">もう一度挑戦</button>
-  `;
-}
-
-// 初期化
-window.onload = loadQuestion;
-</script>
-</body>
-</html>
+// --- 100問のデータベース ---
+const ALL_QUESTIONS = [
+  { id: "q001", tags: ["Index"], q: "meta robots noindex の主な目的は？", choices: ["ランキングを上げる", "検索結果から除外する", "クロール頻度を上げる", "301リダイレクトする"], ans: 1, exp: "noindexはインデックス登録を拒否する命令です。クロール自体は行われます。" },
+  { id: "q002", tags: ["Crawl"], q: "robots.txt でブロックするとどうなる？", choices: ["ページ内容を解析できる", "ページの取得自体が止まる", "インデックスが必ず消える", "404エラーになる"], ans: 1, exp: "robots.txtは『クロール（取得）』を禁止しますが、インデックス登録を完全に防ぐものではありません。" },
+  { id: "q003", tags: ["Canonical"], q: "rel=canonical の役割として正しいのは？", choices: ["強制的な命令", "正規URLを示すヒント", "noindexと同じ", "301と同じ"], ans: 1, exp: "canonicalは検索エンジンに対して『これが正規版です』と伝える強力なヒントですが、強制命令ではありません。" },
+  { id: "q004", tags: ["Sitemap"], q: "XMLサイトマップの主な役割は？", choices: ["インデックスを保証する", "発見とクロールの手助け", "ランキング要因", "重複の削除"], ans: 1, exp: "サイトマップは、クローラーにページの存在と更新を伝える『地図』です。" },
+  { id: "q005", tags: ["Status"], q: "HTTPステータス 404 の意味は？", choices: ["恒久的な移動", "サーバーエラー", "見つからない(Not Found)", "アクセス禁止"], ans: 2, exp: "404はリソースが存在しないことを示します。" },
+  { id: "q006", tags: ["Redirect"], q: "301 リダイレクトの意味は？", choices: ["一時的な転送", "恒久的な転送", "クロール拒否", "アクセス許可"], ans: 1, exp: "サイト移転やURL変更時は、評価を引き継ぐために301（恒久移動）を使います。" },
+  { id: "q007", tags: ["Redirect"], q: "302 リダイレクトの用途
