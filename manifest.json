@@ -8,12 +8,12 @@
   "description": "AIO時代のテクニカルSEOを学ぶ学習アプリ",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "https://takuma51.github.io/tech-seo-master/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "https://takuma51.github.io/tech-seo-master/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
