@@ -330,31 +330,6 @@ function showResult() {
     <button class="btn-next" onclick="location.reload()" style="display:block; background:transparent; border:1px solid rgba(255,255,255,0.3);">もう一度挑戦する</button>
   `;
 }
-
-function showResult() {
-  const percentage = (score / QUIZ_COUNT) * 100;
-  let rank = "C";
-  let msg = "まだまだこれから！";
-  
-  if(percentage >= 90) { rank = "S"; msg = "完璧！テクニカルSEOマスター！"; }
-  else if(percentage >= 70) { rank = "A"; msg = "素晴らしい！現場で戦えるレベル！"; }
-  else if(percentage >= 50) { rank = "B"; msg = "あと一歩！復習しよう。"; }
-
-  const card = document.getElementById('game-card');
-  card.innerHTML = `
-    <h2 style="text-align:center;">結果発表</h2>
-    <div style="text-align:center; margin:20px 0;">
-      <span style="font-size:14px; opacity:0.7;">正解数</span><br>
-      <span style="font-size:32px; font-weight:bold;">${score}</span> <span style="font-size:18px;">/ ${QUIZ_COUNT}</span>
-    </div>
-    <div style="text-align:center; margin-bottom:30px;">
-      <span style="font-size:14px; opacity:0.7;">ランク</span>
-      <span class="rank-badge">${rank}</span>
-      <p style="color:var(--accent); font-weight:bold;">${msg}</p>
-    </div>
-    <button class="btn-next" onclick="location.reload()" style="display:block;">もう一度挑戦する</button>
-  `;
-}
 </script>
 </body>
 </html>
