@@ -110,4 +110,147 @@ const ALL_QUESTIONS = [
   { id: "q004", tags: ["Sitemap"], q: "XMLサイトマップの主な役割は？", choices: ["インデックスを保証する", "発見とクロールの手助け", "ランキング要因", "重複の削除"], ans: 1, exp: "サイトマップは、クローラーにページの存在と更新を伝える『地図』です。" },
   { id: "q005", tags: ["Status"], q: "HTTPステータス 404 の意味は？", choices: ["恒久的な移動", "サーバーエラー", "見つからない(Not Found)", "アクセス禁止"], ans: 2, exp: "404はリソースが存在しないことを示します。" },
   { id: "q006", tags: ["Redirect"], q: "301 リダイレクトの意味は？", choices: ["一時的な転送", "恒久的な転送", "クロール拒否", "アクセス許可"], ans: 1, exp: "サイト移転やURL変更時は、評価を引き継ぐために301（恒久移動）を使います。" },
-  { id: "q007", tags: ["Redirect"], q: "302 リダイレクトの用途
+  { id: "q007", tags: ["Redirect"], q: "302 リダイレクトの用途は？", choices: ["恒久的な転送", "一時的な転送", "削除", "エラー"], ans: 1, exp: "メンテナンス中やABテストなど、一時的な転送には302を使います。" },
+  { id: "q008", tags: ["Index"], q: "重複コンテンツが大量にあると起きる問題は？", choices: ["評価の分散とクロール浪費", "順位上昇", "CWV改善", "サイトリンク表示"], ans: 0, exp: "同じ内容のページが多いと、どのページを評価すべきか迷い、評価が分散します。" },
+  { id: "q009", tags: ["Link"], q: "内部リンクのSEO上の効果は？", choices: ["広告収入増加", "ページの重要度伝達と発見", "サーバー負荷軽減", "画像圧縮"], ans: 1, exp: "内部リンクは、クローラーの通り道であり、ページ間の重要度（リンクジュース）を渡す役割があります。" },
+  { id: "q010", tags: ["Canonical"], q: "URL正規化（Normalization）の目的は？", choices: ["URLを増やす", "評価分散を防ぐ", "クロールを止める", "デザインを整える"], ans: 1, exp: "www有無やパラメータ違いなどの重複を一本化し、評価を集中させます。" },
+  // ... (容量の都合で一部省略していますが、実際にはここにご自身の100問リストを入れられます) ...
+  { id: "q011", tags: ["Crawl"], q: "クロールバジェットを浪費する最大の要因は？", choices: ["高画質画像", "無限生成されるパラメータURL", "CSSファイル", "長いテキスト"], ans: 1, exp: "フィルタ機能などで生成される無限のURLは、ボットを疲弊させます。" },
+  { id: "q012", tags: ["Rendering"], q: "CSR(Client Side Rendering)の弱点は？", choices: ["初期HTMLが空で評価が遅れる", "サーバー負荷が高い", "デザインが崩れる", "画像が表示されない"], ans: 0, exp: "JS実行後にコンテンツが出るため、クローラーの初回評価が遅れるリスクがあります。" },
+  { id: "q013", tags: ["CWV"], q: "LCPは何を測る指標？", choices: ["操作の応答速度", "最大コンテンツの表示時間", "レイアウトのズレ", "サーバー応答時間"], ans: 1, exp: "Largest Contentful Paint。ユーザーにとってメインの情報が表示されるまでの速度です。" },
+  { id: "q014", tags: ["CWV"], q: "CLSは何を測る指標？", choices: ["表示速度", "視覚的なレイアウトのズレ", "インタラクション", "HTTPS対応"], ans: 1, exp: "Cumulative Layout Shift。読み込み中に画面がガタつく度合いを示します。" },
+  { id: "q015", tags: ["CWV"], q: "INPは何を測る指標？", choices: ["画像の画質", "操作に対する応答性", "スクロール量", "滞在時間"], ans: 1, exp: "Interaction to Next Paint。クリックやタップに対する反応の良さを測ります。" },
+  { id: "q016", tags: ["Schema"], q: "構造化データ(Schema.org)のメリットは？", choices: ["必ず1位になる", "検索エンジンが内容を理解しやすくなる", "デザインが良くなる", "広告が消える"], ans: 1, exp: "リッチリザルト（星評価やQ&Aなど）が表示される可能性があります。" },
+  { id: "q017", tags: ["Schema"], q: "JSON-LDはどこに記述するのが推奨？", choices: ["bodyの末尾", "head内のscriptタグ", "CSSファイル", "画像alt属性"], ans: 1, exp: "Googleはscript type='application/ld+json'形式での記述を推奨しています。" },
+  { id: "q018", tags: ["Mobile"], q: "モバイルフレンドリーでないとどうなる？", choices: ["PC検索で圏外になる", "モバイル検索での評価が下がる", "サイトが削除される", "広告が出ない"], ans: 1, exp: "現在はモバイルファーストインデックス（MFI）が基本のため、スマホ対応は必須です。" },
+  { id: "q019", tags: ["Speed"], q: "画像の遅延読み込み(Lazy-load)の注意点は？", choices: ["全ての画像に行う", "ファーストビュー画像には適用しない", "背景画像のみに行う", "アイコンのみに行う"], ans: 1, exp: "LCP要素（一番上の画像）を遅延させると、LCPが悪化してしまいます。" },
+  { id: "q020", tags: ["Security"], q: "HTTPS化（SSL）はSEOに影響する？", choices: ["全くしない", "ランキング要因の一つである", "マイナスになる", "画像検索のみ影響"], ans: 1, exp: "GoogleはHTTPSをランキングシグナルの一つとして公表しています。" }
+  // ★ここに残りの問題を自由に追加できます★
+];
+// ※動作確認用に20問にしていますが、後で100問までコピペで増やせます。
+
+const QUIZ_COUNT = 10; // 1回あたりの出題数（30問にするならここを30に変更）
+let currentDeck = [];
+let currentIdx = 0;
+let score = 0;
+
+// PWA設定
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+
+// ユーティリティ: 配列をシャッフル
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// クイズ開始
+function startQuiz() {
+  // 全問題からランダムに抽出
+  const shuffled = shuffle([...ALL_QUESTIONS]);
+  currentDeck = shuffled.slice(0, QUIZ_COUNT);
+  
+  currentIdx = 0;
+  score = 0;
+  
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('game-card').style.display = 'block';
+  document.getElementById('game-card').classList.add('slide-in');
+  
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const q = currentDeck[currentIdx];
+  const card = document.getElementById('game-card');
+  
+  // アニメーションリセット
+  card.classList.remove('slide-in');
+  void card.offsetWidth;
+  card.classList.add('slide-in');
+
+  // ステータス更新
+  document.getElementById('status-bar').textContent = `残り ${QUIZ_COUNT - currentIdx} 問`;
+  document.getElementById('q-meta').innerHTML = `<span class="tag">${q.tags[0]}</span> <span style="font-size:12px;opacity:0.7">Q.${currentIdx+1}</span>`;
+  document.getElementById('question').textContent = q.q;
+  document.getElementById('progress').style.width = `${(currentIdx / QUIZ_COUNT) * 100}%`;
+
+  // 選択肢生成
+  const optsDiv = document.getElementById('options');
+  optsDiv.innerHTML = "";
+  q.choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = "btn-option";
+    btn.textContent = choice;
+    btn.onclick = () => checkAnswer(i, q.ans, btn);
+    optsDiv.appendChild(btn);
+  });
+
+  document.getElementById('explanation').className = "explanation";
+  document.getElementById('btn-next').style.display = "none";
+}
+
+function checkAnswer(selected, correct, btn) {
+  if (navigator.vibrate) navigator.vibrate(10);
+  const btns = document.querySelectorAll('.btn-option');
+  btns.forEach(b => b.disabled = true);
+
+  if (selected === correct) {
+    btn.classList.add('correct');
+    score++;
+  } else {
+    btn.classList.add('wrong');
+    btns[correct].classList.add('correct');
+    if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+  }
+
+  const expDiv = document.getElementById('explanation');
+  expDiv.innerHTML = "<strong>💡 解説</strong><br>" + currentDeck[currentIdx].exp;
+  expDiv.classList.add('show');
+
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = (currentIdx === QUIZ_COUNT - 1) ? "結果を見る" : "次の問題へ";
+  nextBtn.style.display = "block";
+  nextBtn.onclick = nextQuestion;
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if (currentIdx < QUIZ_COUNT) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  const percentage = (score / QUIZ_COUNT) * 100;
+  let rank = "C";
+  let msg = "まだまだこれから！";
+  
+  if(percentage >= 90) { rank = "S"; msg = "完璧！テクニカルSEOマスター！"; }
+  else if(percentage >= 70) { rank = "A"; msg = "素晴らしい！現場で戦えるレベル！"; }
+  else if(percentage >= 50) { rank = "B"; msg = "あと一歩！復習しよう。"; }
+
+  const card = document.getElementById('game-card');
+  card.innerHTML = `
+    <h2 style="text-align:center;">結果発表</h2>
+    <div style="text-align:center; margin:20px 0;">
+      <span style="font-size:14px; opacity:0.7;">正解数</span><br>
+      <span style="font-size:32px; font-weight:bold;">${score}</span> <span style="font-size:18px;">/ ${QUIZ_COUNT}</span>
+    </div>
+    <div style="text-align:center; margin-bottom:30px;">
+      <span style="font-size:14px; opacity:0.7;">ランク</span>
+      <span class="rank-badge">${rank}</span>
+      <p style="color:var(--accent); font-weight:bold;">${msg}</p>
+    </div>
+    <button class="btn-next" onclick="location.reload()" style="display:block;">もう一度挑戦する</button>
+  `;
+}
+</script>
+</body>
+</html>
