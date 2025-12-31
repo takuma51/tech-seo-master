@@ -61,6 +61,7 @@
       border-radius: 14px; color: #fff; font-weight: bold; font-size: 16px;
       display: none; cursor: pointer; box-shadow: 0 4px 15px rgba(124, 92, 255, 0.4);
       transition: transform 0.1s;
+      box-sizing: border-box; /* 追加: パディングを含めて幅を計算 */
     }
     .btn-next:active { transform: scale(0.98); opacity: 0.9; }
 
@@ -259,15 +260,27 @@ function loadQuestion() {
   document.getElementById('question').textContent = q.q;
   document.getElementById('progress').style.width = `${(currentIdx / QUIZ_COUNT) * 100}%`;
 
+  // --- 修正点: 選択肢のランダム配置 ---
   const optsDiv = document.getElementById('options');
   optsDiv.innerHTML = "";
-  q.choices.forEach((choice, i) => {
+
+  // 1. 選択肢のインデックス配列を作成 [0, 1, 2, 3]
+  let indices = q.choices.map((_, i) => i);
+  // 2. インデックスをシャッフル [2, 0, 3, 1] のようになる
+  indices = shuffle(indices);
+  // 3. 正解の選択肢が、シャッフル後にどこに行ったかを探す
+  const newCorrectIndex = indices.indexOf(q.ans);
+
+  // 4. シャッフルされた順序でボタンを生成
+  indices.forEach((originalIndex, newIndex) => {
     const btn = document.createElement('button');
     btn.className = "btn-option";
-    btn.textContent = choice;
-    btn.onclick = () => checkAnswer(i, q.ans, btn);
+    btn.textContent = q.choices[originalIndex];
+    // checkAnswerには、新しい正解の位置(newCorrectIndex)を渡す
+    btn.onclick = () => checkAnswer(newIndex, newCorrectIndex, btn);
     optsDiv.appendChild(btn);
   });
+  // ------------------------------------
 
   document.getElementById('explanation').className = "explanation";
   document.getElementById('btn-next').style.display = "none";
@@ -332,7 +345,7 @@ function showResult() {
       <p style="color:var(--accent); font-weight:bold;">${msg}</p>
     </div>
     
-    <a href="${shareUrl}" target="_blank" class="btn-next" style="display:flex; justify-content:center; align-items:center; text-decoration:none; background:#000000; border:1px solid rgba(255,255,255,0.3); margin-top:20px; margin-bottom:16px;">
+    <a href="${shareUrl}" target="_blank" class="btn-next" style="display:flex; justify-content:center; align-items:center; text-decoration:none; background:#000000; border:1px solid rgba(255,255,255,0.3); margin-top:20px; margin-bottom:16px; box-sizing: border-box; max-width: 100%;">
       <span style="font-family: sans-serif; font-weight: 900; font-size: 18px; margin-right: 10px;">𝕏</span> で結果をシェア
     </a>
 
