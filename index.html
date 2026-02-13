@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
   <title>Tech SEO Master</title>
-  
+
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b1020">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -20,11 +20,11 @@
       -webkit-tap-highlight-color: transparent;
     }
     .app-container { max-width: 600px; margin: 0 auto; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; }
-    
+
     /* ヘッダー */
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     h1 { font-size: 20px; font-weight: 800; background: linear-gradient(to right, #7c5cff, #22c1c3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
-    
+
     /* 言語スイッチ */
     .lang-switch {
       display: flex; background: rgba(255,255,255,0.1); border-radius: 20px; padding: 2px;
@@ -43,7 +43,7 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.3);
       transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    
+
     @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .slide-in { animation: slideIn 0.4s ease-out forwards; }
 
@@ -62,7 +62,7 @@
     .btn-option:active { transform: scale(0.98); background: rgba(255,255,255,0.1); }
     .btn-option.correct { background: rgba(0, 210, 255, 0.2); border-color: var(--ok); color: var(--ok); }
     .btn-option.wrong { background: rgba(255, 71, 87, 0.2); border-color: var(--ng); }
-    
+
     .explanation {
       display: none; background: rgba(0,0,0,0.3); padding: 16px; border-radius: 16px;
       margin-top: 20px; font-size: 13px; line-height: 1.6; border-left: 4px solid var(--accent);
@@ -81,7 +81,16 @@
 
     .rank-badge { font-size: 48px; font-weight: 900; color: var(--ok); text-shadow: 0 0 20px var(--ok); display:block; margin: 10px 0;}
 
+    /* フッター（公式ページ導線） */
     footer { text-align: center; color: rgba(255,255,255,0.4); font-size: 12px; margin-top: auto; padding-top: 20px; }
+    .footer-links { margin-top: 10px; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+    .footer-links a { color: var(--accent); text-decoration: none; font-weight: bold; }
+    .footer-links a:hover { text-decoration: underline; }
+    .footer-sep { opacity: 0.5; }
+
+    /* 小さめ画面でタップしやすく */
+    .footer-links a { padding: 6px 8px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10); }
+    .footer-links a:active { transform: scale(0.98); }
   </style>
 </head>
 <body>
@@ -90,11 +99,11 @@
   <header>
     <h1>Tech SEO Master</h1>
     <div class="lang-switch">
-      <button class="lang-btn active" id="btn-ja" onclick="setLang('ja')">JP</button>
-      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn active" id="btn-ja" onclick="setLang('ja')" aria-label="Switch language to Japanese">JP</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')" aria-label="Switch language to English">EN</button>
     </div>
   </header>
-  
+
   <div id="status-bar" style="font-size:13px; font-weight:bold; color:var(--accent); text-align:right; margin-bottom:10px;"></div>
 
   <div id="start-screen" class="card slide-in">
@@ -113,7 +122,16 @@
   </div>
 
   <footer>
-    Created by <a href="https://twitter.com/OkaTakuma1" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold;">Takuma Oka</a>
+    <div>
+      Created by
+      <a href="https://twitter.com/OkaTakuma1" target="_blank" rel="noopener"
+         style="color:var(--accent); text-decoration:none; font-weight:bold;">Takuma Oka</a>
+    </div>
+
+    <!-- 公式ページ（利用規約・不具合報告などを集約） -->
+    <div class="footer-links" aria-label="Official links">
+      <a href="https://okatakuma.tokyo/seo-quiz" target="_blank" rel="noopener" id="footer-official"></a>
+    </div>
   </footer>
 </div>
 
@@ -136,6 +154,7 @@ const UI_TEXT = {
     msgA: "素晴らしい！現場で戦えるレベル！",
     msgB: "あと一歩！復習しよう。",
     msgC: "まだまだこれから！",
+    footerOfficial: "公式ページ（利用規約・不具合報告）",
     shareText: (rank, score, total) => `【Tech SEO Master】実力診断テストで「ランク${rank}」を取りました！正解数: ${score}/${total} #TechSEOMaster`
   },
   en: {
@@ -154,12 +173,12 @@ const UI_TEXT = {
     msgA: "Excellent! Professional level!",
     msgB: "Good! Keep learning.",
     msgC: "Keep it up! Needs practice.",
+    footerOfficial: "Official page (Terms & Bug report)",
     shareText: (rank, score, total) => `[Tech SEO Master] I got "Rank ${rank}" in the Technical SEO Quiz! Score: ${score}/${total} #TechSEOMaster`
   }
 };
 
 // --- 多言語対応データベース ---
-// ※ 動作確認用に30問分を用意しました。残りの問題は ja/en 形式で追加してください。
 const ALL_QUESTIONS = [
   { 
     id: "q001", tags: ["Index"], 
@@ -357,10 +376,10 @@ if ('serviceWorker' in navigator) {
 // 言語切り替え処理
 function setLang(lang) {
   currentLang = lang;
-  
+
   document.getElementById('btn-ja').className = lang === 'ja' ? 'lang-btn active' : 'lang-btn';
   document.getElementById('btn-en').className = lang === 'en' ? 'lang-btn active' : 'lang-btn';
-  
+
   document.documentElement.lang = lang;
   updateUIText();
 }
@@ -370,40 +389,28 @@ function updateUIText() {
   document.getElementById('ui-start-title').textContent = t.startTitle;
   document.getElementById('ui-start-desc').innerHTML = t.startDesc;
   document.getElementById('ui-start-btn').textContent = t.startBtn;
-  
+
+  // フッター（公式ページ）
+  const footerOfficial = document.getElementById('footer-official');
+  footerOfficial.textContent = t.footerOfficial;
+
   const btnNext = document.getElementById('btn-next');
-  if (btnNext.style.display !== 'none') {
-     if (currentIdx >= QUIZ_COUNT) {
-         // 結果画面
-     } else {
-         btnNext.textContent = (currentIdx === QUIZ_COUNT - 1) ? t.resultBtn : t.nextBtn;
-     }
+  if (btnNext && btnNext.style.display !== 'none') {
+    if (currentIdx < QUIZ_COUNT) {
+      btnNext.textContent = (currentIdx === QUIZ_COUNT - 1) ? t.resultBtn : t.nextBtn;
+    }
   }
-  
-  // クイズ中なら問題文も更新
+
+  // クイズ中なら問題文も更新（※選択肢のリアルタイム切替は行わない）
   const gameCard = document.getElementById('game-card');
   if (gameCard.style.display === 'block' && currentIdx < QUIZ_COUNT && currentDeck.length > 0) {
-      const qData = currentDeck[currentIdx];
-      // 問題文更新
-      document.getElementById('question').textContent = qData[currentLang].q;
-      // 選択肢のテキスト更新（ボタン順序は変えない）
-      // 現在表示されているボタンのテキストを、対応する言語のテキストに書き換える必要があるが、
-      // シャッフル済みのため、各ボタンが「元の選択肢の何番目か」を知る必要がある。
-      // 簡易的な実装として、ここでは「回答前」であれば再ロードする。
-      // 回答後だと解説も切り替える必要があり複雑になるため、
-      // ユーザー体験としては「切り替えたらその問題の最初に戻る」ような挙動に見えるのが自然。
-      // 今回はシンプルに解説文の更新だけ行う（回答済みの場合）。
-      const expDiv = document.getElementById('explanation');
-      if (expDiv.classList.contains('show')) {
-          expDiv.innerHTML = `<strong>${t.explanation}</strong><br>` + qData[currentLang].exp;
-      }
-      // ※選択肢ボタンのリアルタイム言語切替は複雑度が高いため、
-      // 実戦的には「次へ」進んだタイミングで言語が適用される、または
-      // ここでロードし直すのが良い。今回はロードし直しを採用。
-      // ただし回答済みの場合はリセットされてしまうので、回答済みフラグが必要だが
-      // 簡略化のため、回答中に切り替えた場合は「日本語/英語が混ざる」のを防ぐため
-      // クイズ開始前推奨、あるいは次問から適用とするのが無難。
-      // ここでは解説文とUI周りのみ即時反映とする。
+    const qData = currentDeck[currentIdx];
+    document.getElementById('question').textContent = qData[currentLang].q;
+
+    const expDiv = document.getElementById('explanation');
+    if (expDiv.classList.contains('show')) {
+      expDiv.innerHTML = `<strong>${t.explanation}</strong><br>` + qData[currentLang].exp;
+    }
   }
 }
 
@@ -422,11 +429,11 @@ function startQuiz() {
   currentDeck = shuffled.slice(0, QUIZ_COUNT);
   currentIdx = 0;
   score = 0;
-  
+
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('game-card').style.display = 'block';
   document.getElementById('game-card').classList.add('slide-in');
-  
+
   loadQuestion();
 }
 
@@ -438,7 +445,7 @@ function loadQuestion() {
 
   const q = currentDeck[currentIdx];
   const qContent = q[currentLang];
-  
+
   const card = document.getElementById('game-card');
   card.classList.remove('slide-in');
   void card.offsetWidth;
@@ -457,11 +464,10 @@ function loadQuestion() {
 
   let indices = qContent.choices.map((_, i) => i);
   indices = shuffle(indices);
-  
+
   indices.forEach((originalIndex) => {
     const btn = document.createElement('button');
     btn.className = "btn-option";
-    // 言語切り替え時に参照できるよう、data属性を持たせても良いが今回はシンプルに
     btn.textContent = qContent.choices[originalIndex];
     btn.onclick = () => checkAnswer(originalIndex, q.ans, btn);
     optsDiv.appendChild(btn);
@@ -487,7 +493,7 @@ function checkAnswer(selectedIndex, correctIndex, btn) {
     // 正解ボタンをハイライト（テキスト一致で判定）
     const correctText = currentDeck[currentIdx][currentLang].choices[correctIndex];
     btns.forEach(b => {
-        if(b.textContent === correctText) b.classList.add('correct');
+      if (b.textContent === correctText) b.classList.add('correct');
     });
     try { if (navigator.vibrate) navigator.vibrate([30, 50, 30]); } catch(e) {}
   }
@@ -516,10 +522,10 @@ function showResult() {
   const percentage = (score / QUIZ_COUNT) * 100;
   let rank = "C";
   let msg = t.msgC;
-  
-  if(percentage >= 90) { rank = "S"; msg = t.msgS; }
-  else if(percentage >= 70) { rank = "A"; msg = t.msgA; }
-  else if(percentage >= 50) { rank = "B"; msg = t.msgB; }
+
+  if (percentage >= 90) { rank = "S"; msg = t.msgS; }
+  else if (percentage >= 70) { rank = "A"; msg = t.msgA; }
+  else if (percentage >= 50) { rank = "B"; msg = t.msgB; }
 
   const shareText = t.shareText(rank, score, QUIZ_COUNT);
   const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText) + "&url=" + encodeURIComponent(location.href);
@@ -536,19 +542,32 @@ function showResult() {
       <span class="rank-badge">${rank}</span>
       <p style="color:var(--accent); font-weight:bold;">${msg}</p>
     </div>
-    
-    <a href="${shareUrl}" target="_blank" class="btn-next" style="display:flex; justify-content:center; align-items:center; text-decoration:none; background:#000000; border:1px solid rgba(255,255,255,0.3); margin-top:20px; margin-bottom:16px; box-sizing: border-box; max-width: 100%;">
+
+    <a href="${shareUrl}" target="_blank" rel="noopener" class="btn-next"
+       style="display:flex; justify-content:center; align-items:center; text-decoration:none; background:#000000; border:1px solid rgba(255,255,255,0.3); margin-top:20px; margin-bottom:16px; box-sizing: border-box; max-width: 100%;">
       <span style="font-family: sans-serif; font-weight: 900; font-size: 18px; margin-right: 10px;">𝕏</span> ${t.shareBtn}
     </a>
 
-    <button class="btn-next" onclick="location.reload()" style="display:block; background:transparent; border:1px solid rgba(255,255,255,0.3);">${t.retryBtn}</button>
+    <button class="btn-next" onclick="location.reload()"
+      style="display:block; background:transparent; border:1px solid rgba(255,255,255,0.3);">${t.retryBtn}</button>
+
+    <div style="margin-top:18px; text-align:center;">
+      <a href="https://okatakuma.tokyo/seo-quiz" target="_blank" rel="noopener"
+         style="display:inline-block; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); color:var(--accent); text-decoration:none; font-weight:bold;">
+        ${t.footerOfficial}
+      </a>
+    </div>
   `;
 }
 
 // 初期化
 window.onload = () => {
-    updateUIText();
-}
+  // 初回はブラウザ言語に寄せたい場合は以下を有効化（不要ならコメントのままでOK）
+  // const lang = (navigator.language || 'ja').toLowerCase().startsWith('en') ? 'en' : 'ja';
+  // setLang(lang);
+
+  updateUIText();
+};
 </script>
 </body>
 </html>
